@@ -19,6 +19,7 @@
                 <th>Nom</th>
                 <th>Prénom</th>
                 <th>État</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -28,6 +29,10 @@
                 <td th:text="${equipement.nomUtilisateur}"></td>
                 <td th:text="${equipement.prenomUtilisateur}"></td>
                 <td th:text="${equipement.etatActuel}"></td>
+                <td>
+                    <a th:href="@{/edit/{id}(id=${equipement.id})}" class="btn btn-sm btn-warning">Modifier</a>
+                    <a th:href="@{/delete/{id}(id=${equipement.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?');">Supprimer</a>
+                </td>
             </tr>
             </tbody>
         </table>
