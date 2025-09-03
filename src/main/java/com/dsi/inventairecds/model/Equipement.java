@@ -21,5 +21,5 @@ public class Equipement {
     private String prenomUtilisateur;
     // private String numeroSerie;
     // private LocalDate dateAchat;
-    private String etatActuel; // OK, Panne, Migration en cours...
+    private String etatActuel; // OK,Migration en cours...
 }
