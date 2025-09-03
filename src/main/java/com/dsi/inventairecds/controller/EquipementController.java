@@ -7,6 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Controller // contrôleur Spring MVC
 @RequestMapping("/")
 public class EquipementController {
@@ -64,5 +68,35 @@ public class EquipementController {
     public String deleteEquipement(@PathVariable("id") Long id) {
         equipementRepository.deleteById(id);
         return "redirect:/";
+    }
+
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
+        List<Equipement> tousLesEquipements = equipementRepository.findAll();
+
+        // 1. Calcul du nombre total par type
+        Map<String, Long> countByType = tousLesEquipements.stream()
+                .collect(Collectors.groupingBy(Equipement::getType, Collectors.counting()));
+        model.addAttribute("countByType", countByType);
+
+        // 2. Calcul du pourcentage de PCs migrés
+        long totalPCs = tousLesEquipements.stream()
+                .filter(e -> "PC".equalsIgnoreCase(e.getType()))
+                .count();
+        long pcsMigres = tousLesEquipements.stream()
+                .filter(e -> "PC".equalsIgnoreCase(e.getType()) && "Migré Windows 11".equalsIgnoreCase(e.getEtatActuel()))
+                .count();
+        double pourcentageMigration = (totalPCs > 0) ? ((double) pcsMigres / totalPCs) * 100 : 0;
+        model.addAttribute("pourcentageMigration", String.format("%.2f", pourcentageMigration));
+        model.addAttribute("totalPCs", totalPCs);
+        model.addAttribute("pcsMigres", pcsMigres);
+
+        // 3. Liste des équipements en panne
+        List<Equipement> equipementsEnPanne = tousLesEquipements.stream()
+                .filter(e -> "En panne".equalsIgnoreCase(e.getEtatActuel()))
+                .collect(Collectors.toList());
+        model.addAttribute("equipementsEnPanne", equipementsEnPanne);
+
+        return "dashboard";
     }
 }
